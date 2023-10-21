@@ -12,7 +12,7 @@ import AVFAudio
 import SoundAnalysis
 import SwiftUI
 import CoreML
-import UserNotifications // この行を追加
+import UserNotifications
 
 class AnalyzeService: NSObject, ObservableObject {
     @Published var currentItem: String = "None" {
@@ -102,18 +102,39 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
     
     @Published var detectedView: WarningViewType = .none
     
-    // 警報を検知したときの通知をトリガーする関数
-    func triggerNotification() {
+    // 最後に通知をトリガーした時刻を保持する変数
+    var lastNotificationDate: Date?
+    
+    func triggerNotification(for warningType: WarningViewType) {
         let content = UNMutableNotificationContent()
-        content.title = "警報検知"  // この行でタイトルを設定
-        content.body = "警報が検知されました。"  // この行で本文を設定
-        content.sound = UNNotificationSound.default  // この行でサウンドを設定
+        
+        // 警報の種類に応じて通知の内容を設定
+        switch warningType {
+        case .warning1:
+            content.title = "火災報知器警報"
+            content.body = "火災報知器が検知されました。"
+        case .warning2:
+            content.title = "防災警報"
+            content.body = "防災警報が検知されました。"
+        default:
+            return
+        }
+        
+        // サウンドをオフにする
+        content.sound = nil
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
+        // 最後の通知から1分以上経過しているか、まだ通知がトリガーされていない場合に通知をトリガー
+        if let lastDate = lastNotificationDate, Date().timeIntervalSince(lastDate) < 60 {
+            return
+        }
+        
         UNUserNotificationCenter.current().add(request)
+        lastNotificationDate = Date()  // 通知をトリガーした現在の時刻を保存
     }
+
     
     func request(_ request: SNRequest, didProduce result: SNResult) {
         guard let result = result as? SNClassificationResult else  { return }
@@ -133,13 +154,13 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
             switch classification.identifier {
             case "防災警報":
                 self.detectedView = .warning2
-                triggerNotification() // この行を追加
+                triggerNotification(for: .warning2)
             case "火災報知器1(上下)":
                 self.detectedView = .warning1
-                triggerNotification() // この行を追加
+                triggerNotification(for: .warning1)
             case "火災報知器2(上上)":
                 self.detectedView = .warning1
-                triggerNotification() // この行を追加
+                triggerNotification(for: .warning1)
             default:
                 break
             }
