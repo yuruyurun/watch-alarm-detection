@@ -105,10 +105,21 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
     // 最後に通知をトリガーした時刻を保持する変数
     var lastNotificationDate: Date?
     
+    func triggerRepeatedHapticFeedback(times: Int, interval: TimeInterval) {
+        guard times > 0 else { return }
+        
+        // ハプティックフィードバックを生成
+        WKInterfaceDevice.current().play(.notification)
+        
+        // 指定された間隔後に再帰的に関数を呼び出す
+        DispatchQueue.main.asyncAfter(deadline: .now() + interval) {
+            self.triggerRepeatedHapticFeedback(times: times - 1, interval: interval)
+        }
+    }
+    
     func triggerNotification(for warningType: WarningViewType) {
         let content = UNMutableNotificationContent()
         
-        // 警報の種類に応じて通知の内容を設定
         switch warningType {
         case .warning1:
             content.title = "火災報知器警報"
@@ -120,20 +131,22 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
             return
         }
         
-        // サウンドをオフにする
         content.sound = nil
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
-        // 最後の通知から1分以上経過しているか、まだ通知がトリガーされていない場合に通知をトリガー
         if let lastDate = lastNotificationDate, Date().timeIntervalSince(lastDate) < 60 {
             return
         }
         
+        // ハプティックフィードバックを3回、0.5秒の間隔で繰り返す
+        triggerRepeatedHapticFeedback(times: 4, interval: 0.8)
+        
         UNUserNotificationCenter.current().add(request)
-        lastNotificationDate = Date()  // 通知をトリガーした現在の時刻を保存
+        lastNotificationDate = Date()
     }
+
 
     
     func request(_ request: SNRequest, didProduce result: SNResult) {
