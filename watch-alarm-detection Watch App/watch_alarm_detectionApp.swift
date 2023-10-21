@@ -5,6 +5,8 @@
 //  Created by Kyosuke Yurugi on 2023/10/21.
 //
 
+// watch-alarm-detection.swift
+
 import SwiftUI
 import UserNotifications
 
@@ -19,6 +21,9 @@ struct watch_alarm_detection_Watch_AppApp: App {
                 print("通知の許可が拒否されました")
             }
         }
+        
+        // デリゲートの設定
+        UNUserNotificationCenter.current().delegate = NotificationDelegate()
     }
     
     var body: some Scene {
@@ -27,3 +32,12 @@ struct watch_alarm_detection_Watch_AppApp: App {
         }
     }
 }
+
+// デリゲートの実装
+class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // フォアグラウンドでの通知表示を許可
+        completionHandler([.alert, .sound])
+    }
+}
+

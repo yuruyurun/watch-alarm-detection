@@ -5,11 +5,14 @@
 //  Created by Kyosuke Yurugi on 2023/09/28.
 //
 
+// AnalyzeService.swift
+
 import Foundation
 import AVFAudio
 import SoundAnalysis
 import SwiftUI
 import CoreML
+import UserNotifications // この行を追加
 
 class AnalyzeService: NSObject, ObservableObject {
     @Published var currentItem: String = "None" {
@@ -99,6 +102,19 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
     
     @Published var detectedView: WarningViewType = .none
     
+    // 警報を検知したときの通知をトリガーする関数
+    func triggerNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "警報検知"  // この行でタイトルを設定
+        content.body = "警報が検知されました。"  // この行で本文を設定
+        content.sound = UNNotificationSound.default  // この行でサウンドを設定
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request)
+    }
+    
     func request(_ request: SNRequest, didProduce result: SNResult) {
         guard let result = result as? SNClassificationResult else  { return }
         guard let classification = result.classifications.first else { return }
@@ -117,10 +133,13 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
             switch classification.identifier {
             case "防災警報":
                 self.detectedView = .warning2
+                triggerNotification() // この行を追加
             case "火災報知器1(上下)":
                 self.detectedView = .warning1
+                triggerNotification() // この行を追加
             case "火災報知器2(上上)":
                 self.detectedView = .warning1
+                triggerNotification() // この行を追加
             default:
                 break
             }

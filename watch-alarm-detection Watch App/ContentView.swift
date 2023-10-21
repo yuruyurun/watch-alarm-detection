@@ -4,7 +4,6 @@
 //
 //  Created by Kyosuke Yurugi on 2023/10/21.
 //
-
 import SwiftUI
 
 enum WarningViewType {
@@ -56,8 +55,6 @@ struct ContentView: View {
         .onAppear {
             resultsObserver.detectedView = .none
         }
-        .background(NavigationLink("", destination: WarningView1(), isActive: .init(get: { resultsObserver.detectedView == .warning1 }, set: { _ in })).opacity(0)) // この行を追加
-        .background(NavigationLink("", destination: WarningView2(), isActive: .init(get: { resultsObserver.detectedView == .warning2 }, set: { _ in })).opacity(0)) // この行を追加
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ResultUpdated")))
         { _ in
             self.currentDetectedSoundSource = AnalyzeService.shared.currentItem
@@ -70,9 +67,6 @@ extension NSNotification {
     static let ImageClick = Notification.Name.init("ImageClick")
 }
 
-
-//3.5と7秒や3と6秒などでやるロードのノイズなどを追加学習
 #Preview {
     ContentView()
 }
-//
