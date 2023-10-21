@@ -17,8 +17,6 @@
 		49996C712AE3DE3A00F4B530 /* watch_alarm_detection_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49996C702AE3DE3A00F4B530 /* watch_alarm_detection_Watch_AppUITestsLaunchTests.swift */; };
 		49996C822AE3E2DD00F4B530 /* AnalyzeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49996C812AE3E2DC00F4B530 /* AnalyzeService.swift */; };
 		49996C842AE3E31800F4B530 /* keiho.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 49996C832AE3E31800F4B530 /* keiho.mlmodel */; };
-		49996C862AE3E32600F4B530 /* WarningView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49996C852AE3E32600F4B530 /* WarningView1.swift */; };
-		49996C882AE3E32E00F4B530 /* WarningView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49996C872AE3E32E00F4B530 /* WarningView2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,8 +71,6 @@
 		49996C702AE3DE3A00F4B530 /* watch_alarm_detection_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watch_alarm_detection_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		49996C812AE3E2DC00F4B530 /* AnalyzeService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyzeService.swift; sourceTree = "<group>"; };
 		49996C832AE3E31800F4B530 /* keiho.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = keiho.mlmodel; sourceTree = "<group>"; };
-		49996C852AE3E32600F4B530 /* WarningView1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WarningView1.swift; sourceTree = "<group>"; };
-		49996C872AE3E32E00F4B530 /* WarningView2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WarningView2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,8 +126,6 @@
 				49996C532AE3DE3900F4B530 /* watch_alarm_detectionApp.swift */,
 				49996C552AE3DE3900F4B530 /* ContentView.swift */,
 				49996C812AE3E2DC00F4B530 /* AnalyzeService.swift */,
-				49996C852AE3E32600F4B530 /* WarningView1.swift */,
-				49996C872AE3E32E00F4B530 /* WarningView2.swift */,
 				49996C572AE3DE3A00F4B530 /* Assets.xcassets */,
 				49996C592AE3DE3A00F4B530 /* Preview Content */,
 			);
@@ -321,11 +315,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49996C862AE3E32600F4B530 /* WarningView1.swift in Sources */,
 				49996C822AE3E2DD00F4B530 /* AnalyzeService.swift in Sources */,
 				49996C842AE3E31800F4B530 /* keiho.mlmodel in Sources */,
 				49996C562AE3DE3900F4B530 /* ContentView.swift in Sources */,
-				49996C882AE3E32E00F4B530 /* WarningView2.swift in Sources */,
 				49996C542AE3DE3900F4B530 /* watch_alarm_detectionApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

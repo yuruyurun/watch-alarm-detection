@@ -101,6 +101,10 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
     }
     
     @Published var detectedView: WarningViewType = .none
+    // 警報の認識回数をカウントする変数
+    var warningCount: Int = 0
+    // 最初の警報を検知した時刻を保持する変数
+    var firstWarningDate: Date?
     
     // 最後に通知をトリガーした時刻を保持する変数
     var lastNotificationDate: Date?
@@ -122,7 +126,7 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
         
         switch warningType {
         case .warning1:
-            content.title = "火災報知器警報"
+            content.title = "火災警報"
             content.body = "火災報知器が検知されました。"
         case .warning2:
             content.title = "防災警報"
@@ -136,12 +140,12 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
-        if let lastDate = lastNotificationDate, Date().timeIntervalSince(lastDate) < 60 {
+        if let lastDate = lastNotificationDate, Date().timeIntervalSince(lastDate) < 120 {
             return
         }
         
-        // ハプティックフィードバックを3回、0.5秒の間隔で繰り返す
-        triggerRepeatedHapticFeedback(times: 4, interval: 0.8)
+        // ハプティックフィードバックを回、1秒の間隔で繰り返す
+        triggerRepeatedHapticFeedback(times: 5, interval: 1.0)
         
         UNUserNotificationCenter.current().add(request)
         lastNotificationDate = Date()
@@ -164,23 +168,36 @@ class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
         self.currentItem = "\(classification.identifier): \(percentString)"
         
         if classification.confidence >= 0.9 {
-            switch classification.identifier {
-            case "防災警報":
-                self.detectedView = .warning2
-                triggerNotification(for: .warning2)
-            case "火災報知器1(上下)":
-                self.detectedView = .warning1
-                triggerNotification(for: .warning1)
-            case "火災報知器2(上上)":
-                self.detectedView = .warning1
-                triggerNotification(for: .warning1)
-            default:
-                break
+            // 最初の警報を検知した時刻を設定
+            if firstWarningDate == nil {
+                firstWarningDate = Date()
+            }
+            
+            // カウンターをインクリメント
+            warningCount += 1
+            
+            // 30秒が経過したか、カウンターが5に達した場合
+            if let startDate = firstWarningDate, Date().timeIntervalSince(startDate) > 30 || warningCount >= 5 {
+                if warningCount >= 5 {
+                    switch classification.identifier {
+                    case "防災警報":
+                        self.detectedView = .warning2
+                        triggerNotification(for: .warning2)
+                    case "火災報知器1(上下)":
+                        self.detectedView = .warning1
+                        triggerNotification(for: .warning1)
+                    case "火災報知器2(上上)":
+                        self.detectedView = .warning1
+                        triggerNotification(for: .warning1)
+                    default:
+                        break
+                    }
+                }
+                // カウンターと時刻をリセット
+                warningCount = 0
+                firstWarningDate = nil
             }
         }
-        
-        let nc = NotificationCenter.default
-        nc.post(name: Notification.Name("ResultUpdated"), object: nil)
     }
     
     func request(_ request: SNRequest, didFailWithError error: Error) {
